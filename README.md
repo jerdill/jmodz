@@ -10,4 +10,4 @@ All of the Freight Shipping Rate quote exensions for Magento 2 that I have found
 
 The UPS Freight LTL Shipping Extension allows your Magento storefront to request shipping freight estimates from the UPS Freight SOAP based web services. These are the same rates that can manually be loaded via the UPS Freight LTL estimate page (https://wwwapps.ups.com/fctc/timeandcost?loc=en_US) . You have the ability to apply two levels of fees (either flat or percent), which will be stacked onto the resulting estimate.
 
-This is a port of an old zmodulez extension that doesn't appear to be supported anymore so I had to recreate it for magento version 2
+This is a port of an old zmodulez extension that doesn't appear to be supported anymore so I had to have it recreated it for magento version 2
