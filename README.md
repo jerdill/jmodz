@@ -1,6 +1,6 @@
 # jmodz
 
-Magento v2
+Magento v2 Module
 
 UPS Freight LTL Shipping Extension
 
