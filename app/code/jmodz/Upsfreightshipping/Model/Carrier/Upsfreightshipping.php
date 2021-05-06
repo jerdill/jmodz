@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace jmodz\Upsfreightshipping\Model\Carrier;
+namespace Thinkbeat\Upsfreightshipping\Model\Carrier;
 
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Rate\Result;
@@ -61,6 +61,7 @@ class Upsfreightshipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier
      */
     public function collectRates(RateRequest $request)
     {
+
         if (!$this->getConfigFlag('active')) {
             return false;
         }
@@ -72,7 +73,6 @@ class Upsfreightshipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier
 			//sMage::log('showing residential fee..........');
 			$this->_result->append($this->_getQuotes(true));
 		}
-
         //$shippingPrice = $this->getConfigData('price');
 
         //$result = $this->_rateResultFactory->create();
@@ -140,7 +140,7 @@ class Upsfreightshipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier
 
 		//echo gettype($fp);die;
 		$serviceResponse = @stream_get_contents($fp);
-
+//print_r($serviceResponse);die;
 		return $serviceResponse;
 	}
 
@@ -154,6 +154,8 @@ class Upsfreightshipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier
 		$response = str_replace(':', '_', $response);
 		$netFreightCharge = null;
 		$xml = null;
+		//echo "<pre>";print_r($response);exit;
+		$logger->info('XML Response'.$response);
 		if (!is_null($response)) {
 			$xml = simplexml_load_string($response);
 
@@ -177,13 +179,16 @@ class Upsfreightshipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier
 			$logger->info("XML Response was null.");
 		}
 		$result = $this->_rateResultFactory->create();
+		//print_r($netFreightCharge);die;
 		//$result->append($this->buildRate($expectedArrivalDate, 0, $this->getConfigData('methodtext'), 0, 0));
 		//$result = Mage::getModel('shipping/rate_result');
 		if (!isset($netFreightCharge) || is_null($netFreightCharge) || $netFreightCharge == "") {
 			//Mage::log("Rate Request error occurred. See request/response below:");
 			//Mage::log('XML Request'.$xmlRequest);
 			//Mage::log('XML Response'.$response);
-
+$logger->info("Rate Request error occurred. See request/response below:");
+$logger->info('XML Request'.$xmlRequest);
+$logger->info('XML Response'.$response);
 			// don't show the error twice
 			if (!$showResidentialRate){
 
@@ -398,23 +403,22 @@ HEAD;
 		if($handlingAction == self::HANDLING_ACTION_PERPACKAGE)
 		{
 			if ($handlingType == self::HANDLING_TYPE_PERCENT) {
-				$finalMethodPrice = ($cost + ($cost * $handlingFee/100));
+				$finalMethodPrice = ($cost + ($cost * $handlingFee/100))* $this->_numBoxes;
 			} else {
-				$finalMethodPrice = ($cost + $handlingFee);
+				$finalMethodPrice = ($cost + $handlingFee)* $this->_numBoxes;
 			}
 		} else {
 			if ($handlingType == self::HANDLING_TYPE_PERCENT) {
-				$finalMethodPrice = ($cost) + ($cost * $handlingFee/100);
+				$finalMethodPrice = ($cost* $this->_numBoxes) + ($cost* $this->_numBoxes * $handlingFee/100);
 			} else {
 	
-				$finalMethodPrice = ($cost ) + $handlingFee;
+				$finalMethodPrice = ($cost * $this->_numBoxes) + $handlingFee;
 			}
 		}
 		return $finalMethodPrice;
 	}
 
 	public function buildRate($expectedArrivalDateString, $netFreightChargeAmt, $methodText, $rDeliveryAmt, $idx) {
-
 		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 		$method = $this->_rateMethodFactory->create();
 		//$method = $rate['service'];
