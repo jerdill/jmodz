@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Thinkbeat\Upsfreightshipping\Model\Carrier;
+namespace jmodz\Upsfreightshipping\Model\Carrier;
 
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Rate\Result;
